@@ -1,0 +1,157 @@
+"use client";
+
+import { useMemo, useState } from "react";
+import CountryCard from "@/components/CountryCard";
+import SearchBar from "@/components/SearchBar";
+import LoadingSkeleton from "@/components/LoadingSkeleton";
+import ComparisonPanel from "@/components/ComparisonPanel";
+import useCountries from "@/hooks/useCountries";
+import useFavorites from "@/hooks/useFavorites";
+import { enrichCountries } from "@/utils/countryHelpers";
+
+export default function ExplorerPage() {
+  const [searchTerm, setSearchTerm] = useState("");
+  const [comparisonSelection, setComparisonSelection] = useState([]);
+  const { countries, loading, error } = useCountries();
+  const { favorites, toggleFavorite, isFavorite } = useFavorites();
+
+  const enrichedCountries = useMemo(() => enrichCountries(countries), [countries]);
+
+  const favoriteCountries = useMemo(() => {
+    return enrichedCountries.filter((country) => favorites.includes(country.name.common));
+  }, [enrichedCountries, favorites]);
+
+  const filteredCountries = useMemo(() => {
+    return enrichedCountries
+      .filter((country) =>
+        country.name.common.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+  }, [enrichedCountries, searchTerm]);
+
+  const comparedCountries = useMemo(() => {
+    return enrichedCountries.filter((country) =>
+      comparisonSelection.includes(country.name.common)
+    );
+  }, [comparisonSelection, enrichedCountries]);
+
+  function toggleCompare(countryName) {
+    setComparisonSelection((currentSelection) => {
+      if (currentSelection.includes(countryName)) {
+        return currentSelection.filter((item) => item !== countryName);
+      }
+
+      if (currentSelection.length >= 2) {
+        return currentSelection;
+      }
+
+      return [...currentSelection, countryName];
+    });
+  }
+
+  return (
+    <section className="space-y-8">
+      <div className="rounded-3xl border border-white/10 bg-slate-900/70 p-6 shadow-panel">
+        <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
+          <div className="space-y-2">
+            <span className="inline-flex rounded-full border border-emerald-400/20 bg-emerald-400/10 px-4 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-emerald-200">
+              Explorer FIFA
+            </span>
+            <h1 className="text-3xl font-black text-white">Buscador de paises</h1>
+            <p className="max-w-2xl text-sm leading-6 text-slate-300">
+              Consulta informacion oficial de cada pais y complementala con un contexto futbolistico local para enriquecer la experiencia del usuario.
+            </p>
+          </div>
+
+          <div className="w-full max-w-xl">
+            <SearchBar value={searchTerm} onChange={setSearchTerm} />
+          </div>
+        </div>
+      </div>
+
+      <div className="grid gap-4 md:grid-cols-3">
+        <div className="rounded-3xl border border-white/10 bg-white/5 p-5">
+          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">
+            Paises cargados
+          </p>
+          <p className="mt-2 text-3xl font-black text-white">{enrichedCountries.length}</p>
+        </div>
+        <div className="rounded-3xl border border-white/10 bg-white/5 p-5">
+          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">
+            Favoritos guardados
+          </p>
+          <p className="mt-2 text-3xl font-black text-white">{favoriteCountries.length}</p>
+        </div>
+        <div className="rounded-3xl border border-white/10 bg-white/5 p-5">
+          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">
+            Cupos para comparar
+          </p>
+          <p className="mt-2 text-3xl font-black text-white">
+            {comparisonSelection.length}/2
+          </p>
+        </div>
+      </div>
+
+      {favoriteCountries.length > 0 ? (
+        <div className="rounded-3xl border border-amber-400/20 bg-amber-400/10 p-5">
+          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-amber-200">
+            Favoritos
+          </p>
+          <div className="mt-4 flex flex-wrap gap-2">
+            {favoriteCountries.map((country) => (
+              <span
+                key={country.name.common}
+                className="rounded-full border border-white/10 bg-slate-950/40 px-4 py-2 text-sm text-white"
+              >
+                {country.name.common}
+              </span>
+            ))}
+          </div>
+        </div>
+      ) : null}
+
+      <ComparisonPanel countries={comparedCountries} onRemove={toggleCompare} />
+
+      {loading ? (
+        <LoadingSkeleton />
+      ) : error ? (
+        <div className="rounded-3xl border border-rose-400/20 bg-rose-400/10 p-6 text-sm text-rose-100">
+          {error}
+        </div>
+      ) : (
+        <>
+          <div className="flex items-center justify-between px-1">
+            <p className="text-sm text-slate-300">
+              Resultados encontrados:{" "}
+              <span className="font-semibold text-white">{filteredCountries.length}</span>
+            </p>
+          </div>
+
+          {filteredCountries.length === 0 ? (
+            <div className="rounded-3xl border border-white/10 bg-white/5 p-8 text-center text-sm text-slate-300">
+              No se encontraron paises con el criterio de busqueda actual.
+            </div>
+          ) : (
+            <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
+              {filteredCountries.map((country) => (
+                <CountryCard
+                  key={country.name.common}
+                  country={country}
+                  isFavorite={isFavorite(country.name.common)}
+                  onToggleFavorite={toggleFavorite}
+                  isSelectedForComparison={comparisonSelection.includes(
+                    country.name.common
+                  )}
+                  onToggleCompare={toggleCompare}
+                  comparisonDisabled={
+                    comparisonSelection.length >= 2 &&
+                    !comparisonSelection.includes(country.name.common)
+                  }
+                />
+              ))}
+            </div>
+          )}
+        </>
+      )}
+    </section>
+  );
+}
