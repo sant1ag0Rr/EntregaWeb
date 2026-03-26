@@ -11,6 +11,7 @@ import { enrichCountries } from "@/utils/countryHelpers";
 
 export default function ExplorerPage() {
   const [searchTerm, setSearchTerm] = useState("");
+  const [selectedRegion, setSelectedRegion] = useState("");
   const [comparisonSelection, setComparisonSelection] = useState([]);
   const { countries, loading, error } = useCountries();
   const { favorites, toggleFavorite, isFavorite } = useFavorites();
@@ -25,8 +26,16 @@ export default function ExplorerPage() {
     return enrichedCountries
       .filter((country) =>
         country.name.common.toLowerCase().includes(searchTerm.toLowerCase())
+      )
+      .filter((country) =>
+        selectedRegion === "" || country.region === selectedRegion
       );
-  }, [enrichedCountries, searchTerm]);
+  }, [enrichedCountries, searchTerm, selectedRegion]);
+
+  const regions = useMemo(() => {
+    const uniqueRegions = [...new Set(enrichedCountries.map(country => country.region))];
+    return uniqueRegions.sort();
+  }, [enrichedCountries]);
 
   const comparedCountries = useMemo(() => {
     return enrichedCountries.filter((country) =>
@@ -62,7 +71,21 @@ export default function ExplorerPage() {
             </p>
           </div>
 
-          <div className="w-full max-w-xl">
+          <div className="w-full max-w-xl space-y-4">
+            <div className="flex gap-4">
+              <select
+                value={selectedRegion}
+                onChange={(e) => setSelectedRegion(e.target.value)}
+                className="rounded-lg border border-white/15 bg-slate-800 px-4 py-2 text-white focus:border-emerald-400 focus:outline-none"
+              >
+                <option value="">Todos los continentes</option>
+                {regions.map((region) => (
+                  <option key={region} value={region}>
+                    {region}
+                  </option>
+                ))}
+              </select>
+            </div>
             <SearchBar value={searchTerm} onChange={setSearchTerm} />
           </div>
         </div>
