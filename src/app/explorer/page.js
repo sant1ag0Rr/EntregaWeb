@@ -14,6 +14,7 @@ export default function ExplorerPage() {
   const [selectedRegion, setSelectedRegion] = useState("");
   const [comparisonSelection, setComparisonSelection] = useState([]);
   const [sortOrder, setSortOrder] = useState("name-asc");
+  const [selectedWorldCups, setSelectedWorldCups] = useState("");
   const { countries, loading, error } = useCountries();
   const { favorites, toggleFavorite, isFavorite } = useFavorites();
 
@@ -30,6 +31,9 @@ export default function ExplorerPage() {
       )
       .filter((country) =>
         selectedRegion === "" || country.region === selectedRegion
+      )
+      .filter((country) =>
+        selectedWorldCups === "" || (country.footballInfo && country.footballInfo.worldCups === parseInt(selectedWorldCups))
       );
 
     // Ordenar los países
@@ -43,7 +47,7 @@ export default function ExplorerPage() {
     });
 
     return filtered;
-  }, [enrichedCountries, searchTerm, selectedRegion, sortOrder]);
+  }, [enrichedCountries, searchTerm, selectedRegion, sortOrder, selectedWorldCups]);
 
   const regions = useMemo(() => {
     const uniqueRegions = [...new Set(enrichedCountries.map(country => country.region))];
@@ -105,6 +109,18 @@ export default function ExplorerPage() {
               >
                 <option value="name-asc">Nombre A-Z</option>
                 <option value="name-desc">Nombre Z-A</option>
+              </select>
+              <select
+                value={selectedWorldCups}
+                onChange={(e) => setSelectedWorldCups(e.target.value)}
+                className="rounded-lg border border-white/15 bg-slate-800 px-4 py-2 text-white focus:border-emerald-400 focus:outline-none"
+              >
+                <option value="">Todos los mundiales</option>
+                <option value="1">1 Mundial</option>
+                <option value="2">2 Mundiales</option>
+                <option value="3">3 Mundiales</option>
+                <option value="4">4 Mundiales</option>
+                <option value="5">5 Mundiales</option>
               </select>
             </div>
             <SearchBar value={searchTerm} onChange={setSearchTerm} />
