@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 
 const API_URL =
-  "https://restcountries.com/v3.1/all?fields=name,capital,currencies,flags,latlng";
+  "https://restcountries.com/v3.1/all?fields=name,capital,currencies,flags,latlng,region";
 
 export default function useCountries() {
   const [countries, setCountries] = useState([]);
