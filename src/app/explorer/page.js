@@ -1,6 +1,7 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import CountryCard from "@/components/CountryCard";
 import SearchBar from "@/components/SearchBar";
 import LoadingSkeleton from "@/components/LoadingSkeleton";
@@ -10,6 +11,10 @@ import useFavorites from "@/hooks/useFavorites";
 import { enrichCountries } from "@/utils/countryHelpers";
 
 export default function ExplorerPage() {
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedRegion, setSelectedRegion] = useState("");
   const [comparisonSelection, setComparisonSelection] = useState([]);
@@ -17,6 +22,43 @@ export default function ExplorerPage() {
   const [selectedWorldCups, setSelectedWorldCups] = useState("");
   const { countries, loading, error } = useCountries();
   const { favorites, toggleFavorite, isFavorite } = useFavorites();
+
+  useEffect(() => {
+    const q = searchParams.get("q");
+    const region = searchParams.get("region");
+    const sort = searchParams.get("sort");
+    const wc = searchParams.get("wc");
+
+    if (q !== null) setSearchTerm(q);
+    if (region !== null) setSelectedRegion(region);
+    if (sort === "name-asc" || sort === "name-desc") setSortOrder(sort);
+    if (wc !== null) setSelectedWorldCups(wc);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    const params = new URLSearchParams();
+    if (searchTerm.trim()) params.set("q", searchTerm.trim());
+    if (selectedRegion) params.set("region", selectedRegion);
+    if (sortOrder !== "name-asc") params.set("sort", sortOrder);
+    if (selectedWorldCups) params.set("wc", selectedWorldCups);
+
+    const nextQuery = params.toString();
+    const currentQuery = searchParams.toString();
+    if (nextQuery !== currentQuery) {
+      router.replace(nextQuery ? `${pathname}?${nextQuery}` : pathname, {
+        scroll: false
+      });
+    }
+  }, [
+    pathname,
+    router,
+    searchParams,
+    searchTerm,
+    selectedRegion,
+    sortOrder,
+    selectedWorldCups
+  ]);
 
   const enrichedCountries = useMemo(() => enrichCountries(countries), [countries]);
 
