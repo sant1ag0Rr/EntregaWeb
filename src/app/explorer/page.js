@@ -92,8 +92,26 @@ export default function ExplorerPage() {
   }, [enrichedCountries, searchTerm, selectedRegion, sortOrder, selectedWorldCups]);
 
   const regions = useMemo(() => {
-    const uniqueRegions = [...new Set(enrichedCountries.map(country => country.region))];
+    const uniqueRegions = [
+      ...new Set(enrichedCountries.map((country) => country.region).filter(Boolean))
+    ];
     return uniqueRegions.sort();
+  }, [enrichedCountries]);
+
+  const worldCupOptions = useMemo(() => {
+    const counts = enrichedCountries.reduce((accumulator, country) => {
+      const cups = country.footballInfo?.worldCups;
+      if (typeof cups === "number") {
+        accumulator[cups] = (accumulator[cups] ?? 0) + 1;
+      }
+      return accumulator;
+    }, {});
+
+    return Object.keys(counts)
+      .map((key) => Number(key))
+      .filter((value) => Number.isFinite(value))
+      .sort((a, b) => a - b)
+      .map((cups) => ({ cups, total: counts[cups] }));
   }, [enrichedCountries]);
 
   const comparedCountries = useMemo(() => {
@@ -166,11 +184,11 @@ export default function ExplorerPage() {
                 className="rounded-lg border border-white/15 bg-slate-800 px-4 py-2 text-white focus:border-emerald-400 focus:outline-none"
               >
                 <option value="">Todos los mundiales</option>
-                <option value="1">1 Mundial</option>
-                <option value="2">2 Mundiales</option>
-                <option value="3">3 Mundiales</option>
-                <option value="4">4 Mundiales</option>
-                <option value="5">5 Mundiales</option>
+                {worldCupOptions.map(({ cups, total }) => (
+                  <option key={cups} value={String(cups)}>
+                    {cups} {cups === 1 ? "Mundial" : "Mundiales"} ({total})
+                  </option>
+                ))}
               </select>
               <button
                 type="button"
