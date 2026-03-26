@@ -102,6 +102,14 @@ export default function ExplorerPage() {
     );
   }, [comparisonSelection, enrichedCountries]);
 
+  function clearFilters() {
+    setSearchTerm("");
+    setSelectedRegion("");
+    setSortOrder("name-asc");
+    setSelectedWorldCups("");
+    router.replace(pathname, { scroll: false });
+  }
+
   function toggleCompare(countryName) {
     setComparisonSelection((currentSelection) => {
       if (currentSelection.includes(countryName)) {
@@ -164,6 +172,13 @@ export default function ExplorerPage() {
                 <option value="4">4 Mundiales</option>
                 <option value="5">5 Mundiales</option>
               </select>
+              <button
+                type="button"
+                onClick={clearFilters}
+                className="rounded-lg border border-white/15 bg-slate-950/40 px-4 py-2 text-sm font-semibold text-white transition hover:bg-white/10"
+              >
+                Limpiar
+              </button>
             </div>
             <SearchBar value={searchTerm} onChange={setSearchTerm} />
           </div>
