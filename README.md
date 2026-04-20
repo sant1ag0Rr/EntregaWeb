@@ -1,77 +1,66 @@
 # FIFA World Culture Hub
 
-## Descripcion del proyecto
+Fullstack project organized into independent `frontend` and `backend` applications.
 
-**FIFA World Culture Hub** es una mini aplicacion desarrollada con **React y Next.js** que combina informacion geopolitica con el contexto cultural y futbolistico de distintos paises.
+## Structure
 
-La plataforma permite explorar datos oficiales de cada nacion, como su bandera, capital, moneda y ubicacion, junto con informacion relacionada con su legado en el futbol mundial.
-
-## Problema que resuelve
-
-Durante eventos internacionales como la Copa del Mundo, muchas personas conocen poco sobre los paises participantes mas alla de su seleccion.
-
-Esta aplicacion centraliza informacion tecnica, geografica y deportiva para ofrecer una referencia rapida, clara y atractiva sobre cada nacion.
-
-## Funcionalidades principales
-
-- Explorador global con tarjetas dinamicas por pais.
-- Visualizacion de nombre, bandera y capital.
-- Buscador en tiempo real por nombre del pais.
-- Ficha tecnica con moneda y coordenadas.
-- Seccion con informacion cultural y futbolistica.
-- Manejo de estados de carga y validacion de datos.
-- Navegacion interna entre la pagina principal y la funcionalidad.
-
-## Tecnologias utilizadas
-
-- **Framework:** Next.js
-- **Libreria principal:** React
-- **Estilos:** Tailwind CSS
-- **Estado y efectos:** `useState` y `useEffect`
-- **API externa:** Rest Countries API
-- **Control de versiones / despliegue:** GitHub
-
-## Requisitos para ejecutar el proyecto
-
-Antes de comenzar, asegurate de tener instalado:
-
-- Node.js
-- npm
-
-## Instalacion y ejecucion
-
-1. Clona el repositorio:
-
-```bash
-git clone [URL-del-repositorio]
+```text
+/
++-- frontend/
+|   +-- package.json
+|   +-- package-lock.json
+|   +-- jsconfig.json
+|   +-- next.config.js
+|   +-- postcss.config.js
+|   +-- tailwind.config.js
+|   +-- public/
+|   `-- src/
++-- backend/
+|   +-- package.json
+|   +-- tsconfig.json
+|   `-- src/
++-- .gitignore
+`-- README.md
 ```
 
-2. Entra a la carpeta del proyecto:
+## Frontend
+
+The Next.js app now lives in [frontend/package.json](/c:/Users/Usuario/Downloads/Entrega%20Web/frontend/package.json:1) and its source code is under [frontend/src](/c:/Users/Usuario/Downloads/Entrega%20Web/frontend/src/app/page.js:1).
+
+Run it with:
 
 ```bash
-cd Entrega-Web
-```
-
-3. Instala las dependencias:
-
-```bash
+cd frontend
 npm install
-```
-
-4. Inicia el servidor de desarrollo:
-
-```bash
 npm run dev
 ```
 
-5. Abre la aplicacion en tu navegador desde la URL local que indique Next.js, normalmente:
+Default URL:
 
-```bash
+```text
 http://localhost:3000
 ```
 
-## Integrantes del grupo
+## Backend
 
-- [Santiago Rodriguez]
-- [Victor Monsalve]
-- [Matias Herrera]
+The Express + TypeScript BFF lives in [backend/package.json](/c:/Users/Usuario/Downloads/Entrega%20Web/backend/package.json:1) and follows Clean Architecture inside [backend/src](/c:/Users/Usuario/Downloads/Entrega%20Web/backend/src/app.ts:1).
+
+Run it with:
+
+```bash
+cd backend
+npm install
+npm run dev
+```
+
+Default URL:
+
+```text
+http://localhost:4000/api
+```
+
+## Notes
+
+- `node_modules` should be installed separately inside `frontend/` and `backend/`.
+- `frontend/.next` is generated automatically when the Next.js app runs.
+- The old root-level `node_modules` and root-level `.next` are leftovers from the previous layout and can be removed safely after reinstalling dependencies inside each app.

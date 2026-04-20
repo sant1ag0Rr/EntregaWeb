@@ -2,7 +2,8 @@ import Link from "next/link";
 
 const navLinks = [
   { href: "/", label: "Inicio" },
-  { href: "/explorer", label: "Explorer" }
+  { href: "/explorer", label: "Explorer" },
+  { href: "/trivia", label: "Trivia" }
 ];
 
 export default function Header() {

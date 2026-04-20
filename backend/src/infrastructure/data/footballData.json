@@ -1,0 +1,52 @@
+[
+  {
+    "country": "Argentina",
+    "worldCups": 3,
+    "relevance": "Seleccion historica con figuras como Maradona y Messi, campeona en 1978, 1986 y 2022."
+  },
+  {
+    "country": "Brazil",
+    "worldCups": 5,
+    "relevance": "La seleccion mas laureada de los mundiales, reconocida por su futbol ofensivo y su legado global."
+  },
+  {
+    "country": "Germany",
+    "worldCups": 4,
+    "relevance": "Potencia europea con tradicion competitiva, disciplina tactica y titulos en distintas eras."
+  },
+  {
+    "country": "France",
+    "worldCups": 2,
+    "relevance": "Seleccion moderna y talentosa, campeona en 1998 y 2018, protagonista constante en torneos recientes."
+  },
+  {
+    "country": "Spain",
+    "worldCups": 1,
+    "relevance": "Campeona en 2010 y referente por su estilo de posesion que marco una epoca."
+  },
+  {
+    "country": "Italy",
+    "worldCups": 4,
+    "relevance": "Gigante historico del futbol mundial, destacada por su solidez defensiva y tradicion competitiva."
+  },
+  {
+    "country": "Uruguay",
+    "worldCups": 2,
+    "relevance": "Bicampeon del mundo y uno de los paises mas emblematicos en la historia temprana de la FIFA."
+  },
+  {
+    "country": "England",
+    "worldCups": 1,
+    "relevance": "Cuna del futbol moderno y campeona del mundo en 1966."
+  },
+  {
+    "country": "Croatia",
+    "worldCups": 0,
+    "relevance": "Seleccion competitiva y de gran crecimiento, subcampeona del mundo en 2018."
+  },
+  {
+    "country": "Japan",
+    "worldCups": 0,
+    "relevance": "Referencia asiatica por su desarrollo deportivo, disciplina y presencia constante en mundiales."
+  }
+]
