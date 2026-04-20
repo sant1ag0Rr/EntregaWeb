@@ -1,6 +1,7 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import CountryCard from "@/components/CountryCard";
 import SearchBar from "@/components/SearchBar";
 import LoadingSkeleton from "@/components/LoadingSkeleton";
@@ -10,6 +11,10 @@ import useFavorites from "@/hooks/useFavorites";
 import { enrichCountries } from "@/utils/countryHelpers";
 
 export default function ExplorerPage() {
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedRegion, setSelectedRegion] = useState("");
   const [comparisonSelection, setComparisonSelection] = useState([]);
@@ -17,6 +22,43 @@ export default function ExplorerPage() {
   const [selectedWorldCups, setSelectedWorldCups] = useState("");
   const { countries, loading, error } = useCountries();
   const { favorites, toggleFavorite, isFavorite } = useFavorites();
+
+  useEffect(() => {
+    const q = searchParams.get("q");
+    const region = searchParams.get("region");
+    const sort = searchParams.get("sort");
+    const wc = searchParams.get("wc");
+
+    if (q !== null) setSearchTerm(q);
+    if (region !== null) setSelectedRegion(region);
+    if (sort === "name-asc" || sort === "name-desc") setSortOrder(sort);
+    if (wc !== null) setSelectedWorldCups(wc);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    const params = new URLSearchParams();
+    if (searchTerm.trim()) params.set("q", searchTerm.trim());
+    if (selectedRegion) params.set("region", selectedRegion);
+    if (sortOrder !== "name-asc") params.set("sort", sortOrder);
+    if (selectedWorldCups) params.set("wc", selectedWorldCups);
+
+    const nextQuery = params.toString();
+    const currentQuery = searchParams.toString();
+    if (nextQuery !== currentQuery) {
+      router.replace(nextQuery ? `${pathname}?${nextQuery}` : pathname, {
+        scroll: false
+      });
+    }
+  }, [
+    pathname,
+    router,
+    searchParams,
+    searchTerm,
+    selectedRegion,
+    sortOrder,
+    selectedWorldCups
+  ]);
 
   const enrichedCountries = useMemo(() => enrichCountries(countries), [countries]);
 
@@ -50,8 +92,26 @@ export default function ExplorerPage() {
   }, [enrichedCountries, searchTerm, selectedRegion, sortOrder, selectedWorldCups]);
 
   const regions = useMemo(() => {
-    const uniqueRegions = [...new Set(enrichedCountries.map(country => country.region))];
+    const uniqueRegions = [
+      ...new Set(enrichedCountries.map((country) => country.region).filter(Boolean))
+    ];
     return uniqueRegions.sort();
+  }, [enrichedCountries]);
+
+  const worldCupOptions = useMemo(() => {
+    const counts = enrichedCountries.reduce((accumulator, country) => {
+      const cups = country.footballInfo?.worldCups;
+      if (typeof cups === "number") {
+        accumulator[cups] = (accumulator[cups] ?? 0) + 1;
+      }
+      return accumulator;
+    }, {});
+
+    return Object.keys(counts)
+      .map((key) => Number(key))
+      .filter((value) => Number.isFinite(value))
+      .sort((a, b) => a - b)
+      .map((cups) => ({ cups, total: counts[cups] }));
   }, [enrichedCountries]);
 
   const comparedCountries = useMemo(() => {
@@ -59,6 +119,14 @@ export default function ExplorerPage() {
       comparisonSelection.includes(country.name.common)
     );
   }, [comparisonSelection, enrichedCountries]);
+
+  function clearFilters() {
+    setSearchTerm("");
+    setSelectedRegion("");
+    setSortOrder("name-asc");
+    setSelectedWorldCups("");
+    router.replace(pathname, { scroll: false });
+  }
 
   function toggleCompare(countryName) {
     setComparisonSelection((currentSelection) => {
@@ -131,12 +199,19 @@ export default function ExplorerPage() {
                 className="rounded-lg border border-white/15 bg-slate-800 px-4 py-2 text-white focus:border-emerald-400 focus:outline-none"
               >
                 <option value="">Todos los mundiales</option>
-                <option value="1">1 Mundial</option>
-                <option value="2">2 Mundiales</option>
-                <option value="3">3 Mundiales</option>
-                <option value="4">4 Mundiales</option>
-                <option value="5">5 Mundiales</option>
+                {worldCupOptions.map(({ cups, total }) => (
+                  <option key={cups} value={String(cups)}>
+                    {cups} {cups === 1 ? "Mundial" : "Mundiales"} ({total})
+                  </option>
+                ))}
               </select>
+              <button
+                type="button"
+                onClick={clearFilters}
+                className="rounded-lg border border-white/15 bg-slate-950/40 px-4 py-2 text-sm font-semibold text-white transition hover:bg-white/10"
+              >
+                Limpiar
+              </button>
             </div>
             <SearchBar value={searchTerm} onChange={setSearchTerm} />
           </div>
