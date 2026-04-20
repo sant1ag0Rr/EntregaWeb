@@ -13,6 +13,8 @@ export default function ExplorerPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedRegion, setSelectedRegion] = useState("");
   const [comparisonSelection, setComparisonSelection] = useState([]);
+  const [sortOrder, setSortOrder] = useState("name-asc");
+  const [selectedWorldCups, setSelectedWorldCups] = useState("");
   const { countries, loading, error } = useCountries();
   const { favorites, toggleFavorite, isFavorite } = useFavorites();
 
@@ -23,14 +25,29 @@ export default function ExplorerPage() {
   }, [enrichedCountries, favorites]);
 
   const filteredCountries = useMemo(() => {
-    return enrichedCountries
+    let filtered = enrichedCountries
       .filter((country) =>
         country.name.common.toLowerCase().includes(searchTerm.toLowerCase())
       )
       .filter((country) =>
         selectedRegion === "" || country.region === selectedRegion
+      )
+      .filter((country) =>
+        selectedWorldCups === "" || (country.footballInfo && country.footballInfo.worldCups === parseInt(selectedWorldCups))
       );
-  }, [enrichedCountries, searchTerm, selectedRegion]);
+
+    // Ordenar los países
+    filtered.sort((a, b) => {
+      if (sortOrder === "name-asc") {
+        return a.name.common.localeCompare(b.name.common);
+      } else if (sortOrder === "name-desc") {
+        return b.name.common.localeCompare(a.name.common);
+      }
+      return 0;
+    });
+
+    return filtered;
+  }, [enrichedCountries, searchTerm, selectedRegion, sortOrder, selectedWorldCups]);
 
   const regions = useMemo(() => {
     const uniqueRegions = [...new Set(enrichedCountries.map(country => country.region))];
@@ -55,6 +72,21 @@ export default function ExplorerPage() {
 
       return [...currentSelection, countryName];
     });
+  }
+
+  function randomCompare() {
+    if (enrichedCountries.length < 2) return;
+
+    const indices = [];
+    while (indices.length < 2) {
+      const randomIndex = Math.floor(Math.random() * enrichedCountries.length);
+      if (!indices.includes(randomIndex)) {
+        indices.push(randomIndex);
+      }
+    }
+
+    const selectedNames = indices.map(index => enrichedCountries[index].name.common);
+    setComparisonSelection(selectedNames);
   }
 
   return (
@@ -84,6 +116,26 @@ export default function ExplorerPage() {
                     {region}
                   </option>
                 ))}
+              </select>
+              <select
+                value={sortOrder}
+                onChange={(e) => setSortOrder(e.target.value)}
+                className="rounded-lg border border-white/15 bg-slate-800 px-4 py-2 text-white focus:border-emerald-400 focus:outline-none"
+              >
+                <option value="name-asc">Nombre A-Z</option>
+                <option value="name-desc">Nombre Z-A</option>
+              </select>
+              <select
+                value={selectedWorldCups}
+                onChange={(e) => setSelectedWorldCups(e.target.value)}
+                className="rounded-lg border border-white/15 bg-slate-800 px-4 py-2 text-white focus:border-emerald-400 focus:outline-none"
+              >
+                <option value="">Todos los mundiales</option>
+                <option value="1">1 Mundial</option>
+                <option value="2">2 Mundiales</option>
+                <option value="3">3 Mundiales</option>
+                <option value="4">4 Mundiales</option>
+                <option value="5">5 Mundiales</option>
               </select>
             </div>
             <SearchBar value={searchTerm} onChange={setSearchTerm} />
@@ -132,7 +184,7 @@ export default function ExplorerPage() {
         </div>
       ) : null}
 
-      <ComparisonPanel countries={comparedCountries} onRemove={toggleCompare} />
+      <ComparisonPanel countries={comparedCountries} onRemove={toggleCompare} onRandomCompare={randomCompare} />
 
       {loading ? (
         <LoadingSkeleton />
