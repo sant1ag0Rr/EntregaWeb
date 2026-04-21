@@ -142,6 +142,21 @@ export default function ExplorerPage() {
     });
   }
 
+  function randomCompare() {
+    if (enrichedCountries.length < 2) return;
+
+    const indices = [];
+    while (indices.length < 2) {
+      const randomIndex = Math.floor(Math.random() * enrichedCountries.length);
+      if (!indices.includes(randomIndex)) {
+        indices.push(randomIndex);
+      }
+    }
+
+    const selectedNames = indices.map(index => enrichedCountries[index].name.common);
+    setComparisonSelection(selectedNames);
+  }
+
   return (
     <section className="space-y-8">
       <div className="rounded-3xl border border-white/10 bg-slate-900/70 p-6 shadow-panel">
@@ -244,7 +259,7 @@ export default function ExplorerPage() {
         </div>
       ) : null}
 
-      <ComparisonPanel countries={comparedCountries} onRemove={toggleCompare} />
+      <ComparisonPanel countries={comparedCountries} onRemove={toggleCompare} onRandomCompare={randomCompare} />
 
       {loading ? (
         <LoadingSkeleton />
