@@ -1,4 +1,6 @@
 import Link from "next/link";
+import UserList from "@/components/UserList";
+import { getUsers } from "@/services/userService";
 
 const teamMembers = [
   "Santiago Rodriguez",
@@ -12,7 +14,19 @@ const highlights = [
   "Consulta informacion clave de forma clara y responsive."
 ];
 
-export default function HomePage() {
+export default async function HomePage() {
+  let users = [];
+  let usersError = "";
+
+  try {
+    users = await getUsers();
+  } catch (error) {
+    usersError =
+      error instanceof Error
+        ? "No fue posible cargar la lista de usuarios desde http://localhost:4000/api/users."
+        : "No fue posible cargar la lista de usuarios.";
+  }
+
   return (
     <section className="space-y-10">
       <div className="overflow-hidden rounded-3xl border border-white/10 bg-white/5 shadow-panel backdrop-blur">
@@ -89,6 +103,8 @@ export default function HomePage() {
           </ul>
         </article>
       </div>
+
+      <UserList users={users} error={usersError} />
     </section>
   );
 }

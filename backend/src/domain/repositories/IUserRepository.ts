@@ -1,6 +1,5 @@
 import { User } from "../entities/User";
 
-// Repository contract: application depends on this abstraction only.
 export interface IUserRepository {
   findAll(filters?: { email?: string }): Promise<User[]>;
   findById(id: string): Promise<User | null>;

@@ -2,12 +2,13 @@ import { User } from "../../domain/entities/User";
 import { IUserRepository } from "../../domain/repositories/IUserRepository";
 import { AppError } from "../../domain/errors/AppError";
 
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
 interface CreateUserInput {
   name: string;
   email: string;
 }
 
-// Application layer: validate and create users.
 export class CreateUserUseCase {
   constructor(private readonly userRepository: IUserRepository) {}
 
@@ -17,6 +18,10 @@ export class CreateUserUseCase {
 
     if (!name || !email) {
       throw new AppError("Name and email are required.", 400);
+    }
+
+    if (!EMAIL_REGEX.test(email)) {
+      throw new AppError("Email format is invalid.", 400);
     }
 
     const existingUser = await this.userRepository.findByEmail(email);

@@ -1,7 +1,6 @@
 import { IUserRepository } from "../../domain/repositories/IUserRepository";
 import { AppError } from "../../domain/errors/AppError";
 
-// Application layer: delete users and enforce not-found rule.
 export class DeleteUserUseCase {
   constructor(private readonly userRepository: IUserRepository) {}
 

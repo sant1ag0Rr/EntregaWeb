@@ -2,7 +2,6 @@ import { User } from "../../domain/entities/User";
 import { IUserRepository } from "../../domain/repositories/IUserRepository";
 import { AppError } from "../../domain/errors/AppError";
 
-// Application layer: fetch one user and enforce not-found rule.
 export class GetUserByIdUseCase {
   constructor(private readonly userRepository: IUserRepository) {}
 

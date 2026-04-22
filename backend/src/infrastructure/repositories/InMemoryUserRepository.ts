@@ -2,9 +2,59 @@ import { randomUUID } from "crypto";
 import { User } from "../../domain/entities/User";
 import { IUserRepository } from "../../domain/repositories/IUserRepository";
 
-// Infrastructure repository: in-memory data source for users.
 export class InMemoryUserRepository implements IUserRepository {
-  private readonly users: User[] = [];
+  private readonly users: User[] = [
+    {
+      id: "usr-santiago-rodriguez",
+      name: "Santiago Rodriguez",
+      email: "santiago@example.com"
+    },
+    {
+      id: "usr-victor-monsalve",
+      name: "Victor Monsalve",
+      email: "victor@example.com"
+    },
+    {
+      id: "usr-matias-herrera",
+      name: "Matias Herrera",
+      email: "matias@example.com"
+    },
+    {
+      id: "usr-julian-carmona",
+      name: "Julian Carmona",
+      email: "julian.carmona@example.com"
+    },
+    {
+      id: "usr-valentina-gomez",
+      name: "Valentina Gomez",
+      email: "valentina.gomez@example.com"
+    },
+    {
+      id: "usr-laura-cardenas",
+      name: "Laura Cardenas",
+      email: "laura.cardenas@example.com"
+    },
+    {
+      id: "usr-andres-lopez",
+      name: "Andres Lopez",
+      email: "andres.lopez@example.com"
+    },
+    {
+      id: "usr-camila-torres",
+      name: "Camila Torres",
+      email: "camila.torres@example.com"
+    },
+    {
+      id: "usr-nicolas-ramirez",
+      name: "Nicolas Ramirez",
+      email: "nicolas.ramirez@example.com"
+    },
+    {
+      id: "usr-daniela-castro",
+      name: "Daniela Castro",
+      email: "daniela.castro@example.com"
+    }
+  ];
 
   async findAll(filters?: { email?: string }): Promise<User[]> {
     if (!filters?.email) {

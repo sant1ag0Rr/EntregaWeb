@@ -1,7 +1,6 @@
 import { Router } from "express";
 import { UserController } from "../controllers/UserController";
 
-// Interface routes: bind HTTP user endpoints to the controller.
 export function buildUserRoutes(userController: UserController) {
   const router = Router();
 

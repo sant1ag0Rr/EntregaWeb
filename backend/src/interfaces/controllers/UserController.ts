@@ -9,7 +9,6 @@ function getSingleParam(value: string | string[] | undefined): string {
   return Array.isArray(value) ? value[0] ?? "" : value ?? "";
 }
 
-// Interface controller: translate HTTP request/response for user CRUD.
 export class UserController {
   constructor(
     private readonly getUsersUseCase: GetUsersUseCase,
@@ -88,7 +87,9 @@ export class UserController {
 
       response.status(200).json({
         success: true,
-        message: "User deleted successfully."
+        data: {
+          id: userId
+        }
       });
     } catch (error) {
       next(error);

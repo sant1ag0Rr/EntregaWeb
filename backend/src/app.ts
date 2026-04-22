@@ -27,7 +27,6 @@ export function createApp() {
   app.use(cors());
   app.use(express.json());
 
-  // Composition root: wire the use cases, repositories and controllers together.
   const restCountriesClient = new RestCountriesClient();
   const sportsDbClient = new SportsDbClient();
 
